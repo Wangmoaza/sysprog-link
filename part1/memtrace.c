@@ -32,6 +32,9 @@ static unsigned long n_allocb  = 0;
 static unsigned long n_freeb   = 0;
 static item *list = NULL;
 
+// TODO
+// is it okay to make ptr char type?
+
 void *malloc(size_t size)
 {
   char *error;
@@ -44,17 +47,59 @@ void *malloc(size_t size)
 
   char *ptr = mallocp(size);
   LOG_MALLOC(size, ptr);
+  n_malloc++;
+  n_allocb += size;
   return ptr;
 }
 
 void *calloc(size_t nmemb, size_t size)
 {
+  char *error;
+  callocp = dlsym(RTLD_NEXT, "calloc");
+  if ((error = dlerror()) != NULL)
+  {
+    fputs(error, stderr);
+    exit(1);
+  }
 
+  char *ptr = callocp(nmemb, size);
+  LOG_CALLOC(nmemb, size, ptr);
+  n_calloc++;
+  n_allocb += nmemb * size;
+  return ptr;
 }
 
 void *realloc(void *ptr, size_t size)
 {
+  char *error;
+  reallocp = dlsym(RTLD_NEXT, "realloc");
+  if ((error = dlerror()) != NULL)
+  {
+    fputs(error, stderr);
+    exit(1);
+  }
 
+  char *new_ptr =reallocp(ptr, size);
+  LOG_REALLOC(ptr, size, new_ptr);
+  n_realloc++;
+  n_allocb = size - (0); // FIXME
+}
+
+void free(void *ptr)
+{
+  char *error;
+  if (!ptr)
+    return;
+
+  freep = dlsym(RTLD_NEXT, "free");
+  if ((error = dlerror()) != NULL)
+  {
+    fputs(error, stderr);
+    exit(1);
+  }
+
+  freep(ptr);
+  LOG_FREE(ptr);
 }
 //
 // init - this function is called once when the shared library is loaded
@@ -81,7 +126,7 @@ void fini(void)
 {
   // ...
 
-  LOG_STATISTICS(0L, 0L, 0L);
+  LOG_STATISTICS(n_allocb, n_allocb/(n_malloc+n_calloc), n_freeb);
 
   LOG_STOP();
 
