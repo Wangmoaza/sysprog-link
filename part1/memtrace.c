@@ -32,6 +32,12 @@ static unsigned long n_allocb  = 0;
 static unsigned long n_freeb   = 0;
 static item *list = NULL;
 
+void *malloc(size_t size)
+{
+
+}
+
+
 //
 // init - this function is called once when the shared library is loaded
 //
