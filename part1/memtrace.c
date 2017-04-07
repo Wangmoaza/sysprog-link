@@ -34,7 +34,16 @@ static item *list = NULL;
 
 void *malloc(size_t size)
 {
+  mallocp = dlsym(RTLD_NEXT, "malloc");
+  if ((error = dlerror()) != NULL)
+  {
+    fputs(error, stderr);
+    exit(1);
+  }
 
+  char *ptr = mallocp(size);
+  LOG_MALLOC(size, ptr);
+  return ptr;
 }
 
 void *calloc(size_t nmemb, size_t size)
