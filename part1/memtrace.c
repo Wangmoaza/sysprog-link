@@ -34,6 +34,7 @@ static item *list = NULL;
 
 void *malloc(size_t size)
 {
+  char *error;
   mallocp = dlsym(RTLD_NEXT, "malloc");
   if ((error = dlerror()) != NULL)
   {
