@@ -37,7 +37,15 @@ void *malloc(size_t size)
 
 }
 
+void *calloc(size_t nmemb, size_t size)
+{
 
+}
+
+void *realloc(void *ptr, size_t size)
+{
+
+}
 //
 // init - this function is called once when the shared library is loaded
 //
