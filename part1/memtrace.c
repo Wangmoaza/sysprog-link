@@ -45,7 +45,7 @@ void *malloc(size_t size)
     exit(1);
   }
 
-  char *ptr = mallocp(size);
+  void *ptr = mallocp(size);
   LOG_MALLOC(size, ptr);
   n_malloc++;
   n_allocb += size;
@@ -62,7 +62,7 @@ void *calloc(size_t nmemb, size_t size)
     exit(1);
   }
 
-  char *ptr = callocp(nmemb, size);
+  void *ptr = callocp(nmemb, size);
   LOG_CALLOC(nmemb, size, ptr);
   n_calloc++;
   n_allocb += nmemb * size;
@@ -79,10 +79,10 @@ void *realloc(void *ptr, size_t size)
     exit(1);
   }
 
-  char *new_ptr =reallocp(ptr, size);
+  void *new_ptr =reallocp(ptr, size);
   LOG_REALLOC(ptr, size, new_ptr);
   n_realloc++;
-  n_allocb = size - (0); // FIXME
+  n_allocb += size; // FIXME
 }
 
 void free(void *ptr)
@@ -126,7 +126,7 @@ void fini(void)
 {
   // ...
 
-  LOG_STATISTICS(n_allocb, n_allocb/(n_malloc+n_calloc), n_freeb);
+  LOG_STATISTICS(n_allocb, n_allocb/(n_malloc+n_calloc+n_realloc), n_freeb);
 
   LOG_STOP();
 
